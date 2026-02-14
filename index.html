@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>A Gift For You 🌹</title>
+  <style>
+    :root{
+      --bg1:#fff5fb;
+      --bg2:#f2fbff;
+      --text:#222;
+      --accent:#ff2d55;
+      --accent2:#6c63ff;
+      --card:#ffffffcc;
+      --shadow: 0 20px 60px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, var(--bg1), transparent 60%),
+        radial-gradient(1200px 800px at 80% 90%, var(--bg2), transparent 60%),
+        linear-gradient(135deg, #fff, #fafafa);
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(920px, 94vw);
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.6);
+      backdrop-filter: blur(10px);
+      border-radius:28px;
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 34px);
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: clamp(18px, 3vw, 28px);
+      align-items:center;
+      position:relative;
+      z-index:2;
+    }
+    @media (max-width: 800px){ .card{grid-template-columns:1fr} }
+
+    h1{
+      margin:0 0 8px 0;
+      font-size: clamp(26px, 3.4vw, 44px);
+      line-height:1.05;
+      letter-spacing:-.02em;
+    }
+    p{
+      margin: 0 0 16px 0;
+      font-size: clamp(15px, 1.6vw, 18px);
+      opacity:.9;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(0,0,0,.05);
+      font-weight:600;
+      width:fit-content;
+      margin-bottom:12px;
+    }
+    .btns{ display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+    button{
+      border:0;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .15s ease, opacity .15s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,.12);
+      font-size:16px;
+      user-select:none;
+    }
+    button:active{transform: scale(.98)}
+    .yes{ background: linear-gradient(135deg, var(--accent), #ff7a90); color:white; }
+    .no{ background:#111; color:white; opacity:.92; position:relative; }
+    .hint{ margin-top:12px; font-size:13px; opacity:.7; }
+    .footerNote{ margin-top: 10px; font-size: 12px; opacity: .65; }
+
+    /* Scene */
+    .scene{
+      position:relative;
+      height: 360px;
+      border-radius:22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.55));
+      border: 1px solid rgba(255,255,255,.6);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .floor{
+      position:absolute;
+      bottom:-40px;
+      width:140%;
+      height:120px;
+      background:
+        radial-gradient(closest-side, rgba(255,45,85,.16), transparent 70%),
+        radial-gradient(closest-side, rgba(108,99,255,.12), transparent 70%);
+    }
+
+    /* Bear */
+    .bearWrap{
+      position:absolute;
+      left: 6%;
+      bottom: 26px;
+      width: 230px;
+      transform-origin: bottom center;
+      transition: transform .25s ease;
+      filter: drop-shadow(0 14px 18px rgba(0,0,0,.10));
+    }
+    .bearWrap.cry{ animation: wobble .65s ease-in-out infinite; }
+    @keyframes wobble{
+      0%,100%{ transform: rotate(-1deg) translateY(0); }
+      50%{ transform: rotate(1deg) translateY(1px); }
+    }
+    .tear{
+      opacity:0;
+    }
+    .bearWrap.cry .tear{
+      opacity:1;
+      animation: tearDrop 1.1s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes tearDrop{
+      0%{ transform: translateY(-6px); opacity:0; }
+      15%{ opacity:1; }
+      100%{ transform: translateY(20px); opacity:0; }
+    }
+
+    /* Roses (closed -> open) */
+    .rosesWrap{
+      position:absolute;
+      right: 6%;
+      bottom: 22px;
+      width: 250px;
+      transform-origin: bottom center;
+      transition: transform .35s ease;
+      filter: drop-shadow(0 14px 18px rgba(0,0,0,.10));
+    }
+    .rosesWrap.closed .bud{ transform: scale(.25); opacity:.82; }
+    .rosesWrap.closed .petal{ transform: scale(.3); opacity:.6; }
+    .rosesWrap.closed .leaf{ opacity:.85; }
+    .rosesWrap.open .bud{ transform: scale(1); opacity:1; }
+    .rosesWrap.open .petal{ transform: scale(1); opacity:1; }
+
+    .petal, .bud{ transform-origin: center; transition: transform .55s cubic-bezier(.2,1,.2,1), opacity .35s ease; }
+
+    /* Confetti */
+    .confetti{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:3; }
+    .confetti i{
+      position:absolute;
+      top:-10vh;
+      width:10px; height:14px;
+      border-radius:2px;
+      opacity:.95;
+      animation: fall linear forwards;
+    }
+    @keyframes fall{ to { transform: translateY(120vh) rotate(720deg); } }
+
+    /* Floating hearts */
+    .hearts{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; opacity:0; transition: opacity .25s ease; }
+    .hearts.on{opacity:1;}
+    .hearts span{
+      position:absolute;
+      bottom:-10vh;
+      font-size: 18px;
+      opacity:.85;
+      animation: floatUp linear forwards;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.12));
+    }
+    @keyframes floatUp{
+      to{ transform: translateY(-120vh) translateX(var(--drift)); opacity:0; }
+    }
+
+    /* Big banner */
+    .loveOverlay{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+      z-index:4;
+      opacity:0;
+      transform: scale(.95);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .loveOverlay.show{ opacity:1; transform: scale(1); }
+    .loveBubble{
+      width:min(860px, 92vw);
+      text-align:center;
+      padding: 18px 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.75);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+    .loveBubble h2{
+      margin:0;
+      font-size: clamp(28px, 4.2vw, 56px);
+      line-height:1.02;
+      letter-spacing:-.02em;
+      animation: pop 900ms cubic-bezier(.2,1.2,.2,1) both;
+      background: linear-gradient(135deg, #ff2d55, #6c63ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .loveBubble p{ margin:10px 0 0 0; font-size: clamp(14px, 1.7vw, 18px); opacity:.85; }
+    @keyframes pop{
+      0%{transform: translateY(12px) scale(.92); opacity:0}
+      60%{transform: translateY(-2px) scale(1.03); opacity:1}
+      100%{transform: translateY(0) scale(1); opacity:1}
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+  <div class="confetti" id="confetti"></div>
+
+  <div class="loveOverlay" id="loveOverlay" aria-hidden="true">
+    <div class="loveBubble">
+      <h2 id="loveBig">I love you my babygirlll ❤️</h2>
+      <p id="loveSmall">You just made my heart go 🥹💖</p>
+    </div>
+  </div>
+
+  <div class="card" role="main">
+    <div>
+      <div class="badge">🧸🌹 A tiny surprise</div>
+      <h1 id="title">Here is a gift for you, my boobiee 🌹</h1>
+      <p id="subtitle">Will you accept it? ❤️</p>
+
+      <div class="btns">
+        <button class="yes" id="yesBtn">Yes ✅</button>
+        <button class="no" id="noBtn">No 🙈</button>
+      </div>
+
+      <div class="hint" id="hint">Tip: If you say no… the bear might cry 🥺</div>
+      <div class="footerNote">Made with love 💗</div>
+    </div>
+
+    <div class="scene" aria-label="Cute animation scene">
+      <div class="floor"></div>
+
+      <!-- BEAR -->
+      <div class="bearWrap" id="bear">
+        <svg viewBox="0 0 260 260" width="100%" height="100%" aria-label="Cute bear">
+          <!-- ears -->
+          <circle cx="78" cy="70" r="28" fill="#c49a6c"/>
+          <circle cx="182" cy="70" r="28" fill="#c49a6c"/>
+          <circle cx="78" cy="70" r="15" fill="#e9c8a2" opacity=".9"/>
+          <circle cx="182" cy="70" r="15" fill="#e9c8a2" opacity=".9"/>
+          <!-- head -->
+          <circle cx="130" cy="120" r="72" fill="#c49a6c"/>
+          <!-- cheeks -->
+          <circle cx="88" cy="138" r="18" fill="#e9c8a2" opacity=".35"/>
+          <circle cx="172" cy="138" r="18" fill="#e9c8a2" opacity=".35"/>
+          <!-- eyes -->
+          <circle cx="108" cy="115" r="7" fill="#222"/>
+          <circle cx="152" cy="115" r="7" fill="#222"/>
+          <!-- tear -->
+          <path class="tear" d="M102 125 C96 136, 96 146, 102 154 C108 146,108 136,102 125 Z" fill="#57b8ff"/>
+          <!-- snout -->
+          <ellipse cx="130" cy="145" rx="30" ry="22" fill="#e9c8a2"/>
+          <circle cx="130" cy="140" r="6" fill="#222"/>
+          <!-- mouth (changes by class in JS via opacity) -->
+          <path id="bearSmile" d="M120 149 Q130 160 140 149" stroke="#b04358" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path id="bearSad" d="M120 160 Q130 148 140 160" stroke="#b04358" stroke-width="5" fill="none" stroke-linecap="round" opacity="0"/>
+          <!-- body -->
+          <path d="M70 250 C75 200, 95 180, 130 180 C165 180, 185 200, 190 250 Z" fill="#8fd3ff"/>
+          <!-- paws -->
+          <circle cx="92" cy="210" r="16" fill="#e9c8a2"/>
+          <circle cx="168" cy="210" r="16" fill="#e9c8a2"/>
+        </svg>
+      </div>
+
+      <!-- ROSES -->
+      <div class="rosesWrap closed" id="roses" aria-label="Red roses">
+        <svg viewBox="0 0 260 260" width="100%" height="100%">
+          <!-- stems -->
+          <path d="M120 245 C118 210, 110 185, 98 165" stroke="#1f9a58" stroke-width="10" stroke-linecap="round"/>
+          <path d="M140 245 C142 210, 150 185, 162 165" stroke="#1f9a58" stroke-width="10" stroke-linecap="round"/>
+          <path d="M130 245 C130 210, 130 190, 130 165" stroke="#1f9a58" stroke-width="10" stroke-linecap="round"/>
+          <!-- leaves -->
+          <path class="leaf" d="M102 190 C78 188, 70 170, 92 160 C108 154,118 168,102 190 Z" fill="#35d07a"/>
+          <path class="leaf" d="M158 190 C182 188, 190 170, 168 160 C152 154,142 168,158 190 Z" fill="#2fbf71"/>
+          <!-- roses (3) -->
+          <!-- left -->
+          <g transform="translate(82,110)">
+            <circle class="bud" cx="0" cy="0" r="14" fill="#b3002d"/>
+            <path class="petal" d="M0 -26 C18 -22, 22 -6, 10 4 C2 10,-6 10,-14 4 C-26 -6,-18 -22,0 -26 Z" fill="#ff2d55"/>
+            <path class="petal" d="M0 -12 C10 -10, 12 -2, 6 4 C1 8,-1 8,-6 4 C-12 -2,-10 -10,0 -12 Z" fill="#b3002d" opacity=".9"/>
+          </g>
+          <!-- middle -->
+          <g transform="translate(130,96)">
+            <circle class="bud" cx="0" cy="0" r="15" fill="#b3002d"/>
+            <path class="petal" d="M0 -28 C20 -24, 25 -6, 12 6 C3 13,-3 13,-12 6 C-25 -6,-20 -24,0 -28 Z" fill="#ff2d55"/>
+            <path class="petal" d="M0 -13 C11 -11, 13 -2, 7 5 C2 9,-2 9,-7 5 C-13 -2,-11 -11,0 -13 Z" fill="#b3002d" opacity=".9"/>
+          </g>
+          <!-- right -->
+          <g transform="translate(178,110)">
+            <circle class="bud" cx="0" cy="0" r="14" fill="#b3002d"/>
+            <path class="petal" d="M0 -26 C18 -22, 22 -6, 10 4 C2 10,-6 10,-14 4 C-26 -6,-18 -22,0 -26 Z" fill="#ff2d55"/>
+            <path class="petal" d="M0 -12 C10 -10, 12 -2, 6 4 C1 8,-1 8,-6 4 C-12 -2,-10 -10,0 -12 Z" fill="#b3002d" opacity=".9"/>
+          </g>
+
+          <!-- ribbon -->
+          <path d="M86 220 C110 205, 150 205, 174 220 C155 238, 105 238, 86 220 Z" fill="#ff7a90" opacity=".95"/>
+          <path d="M130 220 C118 234, 106 250, 92 252 C104 238, 116 230, 130 220 Z" fill="#ff2d55"/>
+          <path d="M130 220 C142 234, 154 250, 168 252 C156 238, 144 230, 130 220 Z" fill="#ff2d55"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const title = document.getElementById("title");
+  const subtitle = document.getElementById("subtitle");
+  const hint = document.getElementById("hint");
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const confetti = document.getElementById("confetti");
+  const hearts = document.getElementById("hearts");
+  const loveOverlay = document.getElementById("loveOverlay");
+  const bear = document.getElementById("bear");
+  const roses = document.getElementById("roses");
+  const bearSmile = document.getElementById("bearSmile");
+  const bearSad = document.getElementById("bearSad");
+
+  let noCount = 0;
+  let accepted = false;
+  let heartsInterval = null;
+
+  function makeConfetti(amount = 160){
+    confetti.innerHTML = "";
+    for(let i=0;i<amount;i++){
+      const piece = document.createElement("i");
+      piece.style.left = (Math.random()*100) + "vw";
+      piece.style.animationDelay = (Math.random()*0.4) + "s";
+      piece.style.animationDuration = (2.4 + Math.random()*2.0) + "s";
+      const size = 7 + Math.random()*8;
+      piece.style.width = size + "px";
+      piece.style.height = (size*1.3) + "px";
+      piece.style.background = `hsl(${Math.floor(Math.random()*360)}, 85%, 60%)`;
+      confetti.appendChild(piece);
+    }
+    setTimeout(()=> confetti.innerHTML = "", 5200);
+  }
+
+  function spawnHeart(){
+    const h = document.createElement("span");
+    const set = ["❤️","💖","💗","💕","💘","💞"];
+    h.textContent = set[Math.floor(Math.random()*set.length)];
+    h.style.left = (Math.random()*100) + "vw";
+    h.style.fontSize = (14 + Math.random()*22) + "px";
+    const dur = 3.5 + Math.random()*3.5;
+    h.style.animationDuration = dur + "s";
+    h.style.setProperty("--drift", ((Math.random()*2 - 1) * 140) + "px");
+    hearts.appendChild(h);
+    setTimeout(()=> h.remove(), (dur*1000)+200);
+  }
+
+  function startHearts(){
+    hearts.classList.add("on");
+    if(heartsInterval) return;
+    heartsInterval = setInterval(spawnHeart, 220);
+    for(let i=0;i<14;i++) setTimeout(spawnHeart, i*60);
+  }
+
+  function moveNoButton(){
+    const card = document.querySelector(".card");
+    const rect = card.getBoundingClientRect();
+    const padding = 20;
+    const maxX = rect.width - noBtn.offsetWidth - padding;
+    const maxY = rect.height - noBtn.offsetHeight - padding;
+    const x = padding + Math.random()*Math.max(0, maxX - padding);
+    const y = padding + Math.random()*Math.max(0, maxY - padding);
+    noBtn.style.position = "absolute";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+  }
+
+  noBtn.addEventListener("click", () => {
+    if(accepted) return;
+    noCount++;
+
+    bear.classList.add("cry");
+    bearSmile.style.opacity = "0";
+    bearSad.style.opacity = "1";
+
+    title.textContent = "Awww nooo 🥺";
+    subtitle.textContent = "Please accept the roses 🌹😭";
+    hint.textContent = "If you keep saying no… the bear will keep crying 🙈";
+
+    moveNoButton();
+    if(noCount >= 3) noBtn.style.opacity = "0.75";
+    if(noCount >= 5) noBtn.style.opacity = "0.6";
+  });
+
+  yesBtn.addEventListener("click", () => {
+    if(accepted) return;
+    accepted = true;
+
+    bear.classList.remove("cry");
+    bearSmile.style.opacity = "1";
+    bearSad.style.opacity = "0";
+
+    title.textContent = "I love you my babygirlll ❤️";
+    subtitle.textContent = "Thank you for saying YES 🌹";
+    hint.textContent = "Okay now… confetti + hearts for you 🎉💖";
+
+    roses.classList.remove("closed");
+    roses.classList.add("open");
+
+    makeConfetti(200);
+    startHearts();
+    loveOverlay.classList.add("show");
+
+    noBtn.disabled = true;
+    noBtn.style.opacity = "0.35";
+    noBtn.style.cursor = "not-allowed";
+  });
+</script>
+</body>
+</html>
